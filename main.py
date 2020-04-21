@@ -59,8 +59,8 @@ dl_test = DataLoader(ds_test, batch_size, shuffle=False)
 model = FastSCNN()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 criterion = CrossEntropyLoss()
-success_metric = dice_coeff
-trainer = Trainer(model, criterion, optimizer, dice_coeff, device, None)
+success_metric = pixel_accuracy
+trainer = Trainer(model, criterion, optimizer, success_metric, device, None)
 fit_res = trainer.fit(dl_train,
                       dl_test,
                       num_epochs= num_epochs,
