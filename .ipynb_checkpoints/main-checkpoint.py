@@ -56,15 +56,12 @@ ds_test = PostdamDataset(test_image_path, test_label_path, transform=preprocessi
 dl_train = DataLoader(ds_train, batch_size, shuffle=True)
 dl_test = DataLoader(ds_test, batch_size, shuffle=False)
 
-model = FastSCNN(num_classes=6)
-print("Loaded model")
+model = FastSCNN()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 criterion = CrossEntropyLoss()
 success_metric = pixel_accuracy
 trainer = Trainer(model, criterion, optimizer, success_metric, device, None)
-print("Loaded trainer")
 fit_res = trainer.fit(dl_train,
                       dl_test,
                       num_epochs= num_epochs,
                       checkpoints='src/saved_models/' + model.__class__.__name__)
-print("Finish training")
