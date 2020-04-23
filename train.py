@@ -186,11 +186,9 @@ class Trainer:
             self.tensorboard_logger.add_image("exp-%s/batch/test/images" % self.experiment_prefix, grid, index)
         X = X.to(self.device)
         y = y.to(self.device)
-        pred = self.model(X)
-
-        # Todo delete
-        if pred.shape != (1, 6, 1024, 2048):
-            raise Exception(f"model output size error, output dimmensions {pred.shape}")
+        
+        outputs = self.model(X)
+        pred = outputs[0]
 
         loss = self.loss_fn(pred, y)
         self.optimizer.zero_grad()
@@ -221,7 +219,8 @@ class Trainer:
             X, y = batch_data
             X = X.to(self.device)
             y = y.to(self.device)
-            pred = self.model(X)
+            outputs = self.model(X)
+            pred = outputs[0]
             loss = self.loss_fn(pred, y)
             score = self.objective_metric(pred, y)
             if self.tensorboard_logger:

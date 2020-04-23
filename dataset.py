@@ -8,6 +8,17 @@ import sys
 from torchvision.transforms import ToPILImage
 import torch.nn.functional as F
 
+class ClassesColors:
+    impervious_surfaces = (255, 255, 255)
+    building = (0, 0, 255)
+    low_vegetation = (0, 255, 255)
+    tree = (0, 255, 0)
+    car = (255, 255, 0)
+    background = (255, 0, 0)
+
+    def __len__(self):
+        return 3
+
 
 class PostdamDataset(Dataset):
     def __init__(self, images_path, label_path, transform=None):
@@ -41,10 +52,10 @@ class PostdamDataset(Dataset):
             img = to_tensor(img)
             label = to_tensor(label)
 
-        return img, label
+        return img, label.type(torch.LongTensor)
 
 def compute_mean_std(images_path, label_path):
-    dataset = PostdamDataset(images_path, label_path)
+    dataset = PosrdamDataset(images_path, label_path)
     loader = DataLoader(
         dataset,
         batch_size=1,
