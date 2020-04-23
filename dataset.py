@@ -21,10 +21,11 @@ class ClassesColors:
 
 
 class PostdamDataset(Dataset):
-    def __init__(self, images_path, label_path, transform=None):
+    def __init__(self, images_path, label_path, transform=None, load_tensor=False):
         self.images = glob.glob(os.path.join(images_path, '*.tif'))
         self.labels_path = label_path
         self.transform = transform
+        self.load_tensor = load_tensor
 
     def __len__(self):
         return len(self.images)
@@ -35,15 +36,16 @@ class PostdamDataset(Dataset):
 
         image_path = self.images[idx]
         image_name =  image_path.split('/')[-1]
-
-        print(f"img in {image_path}")
-        print(f"image name {image_name}")
-
         img = Image.open(image_path)
         label_name = image_name.replace('RGB', 'label')
-        print(f"label name {os.path.join(self.labels_path, label_name)}")
+        if self.load_tensor:
+            label_name = label_name.replace('.tif', '.pt')
+            label = torch.load(label_name)
+        else:
+            label = Image.open(os.path.join(self.labels_path, label_name))
 
-        label = Image.open(os.path.join(self.labels_path, label_name))
+        print(f"img in {image_path}")
+        print(f"label name {os.path.join(self.labels_path, label_name)}")
 
         if self.transform:
             img, label = self.transform(img, label)
@@ -52,10 +54,10 @@ class PostdamDataset(Dataset):
             img = to_tensor(img)
             label = to_tensor(label)
 
-        return img, label.type(torch.LongTensor)
+        return img, label
 
 def compute_mean_std(images_path, label_path):
-    dataset = PosrdamDataset(images_path, label_path)
+    dataset = PostdamDataset(images_path, label_path)
     loader = DataLoader(
         dataset,
         batch_size=1,
