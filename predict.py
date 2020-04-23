@@ -8,6 +8,7 @@ from PIL import Image
 
 from utils.transforms import NewPad
 from utils.transforms import pred_2_img
+from metrics import pixel_accuracy
 
 
 parser = argparse.ArgumentParser(
@@ -20,6 +21,8 @@ parser.add_argument('--outdir', default='./test_result', type=str,
                     help='path to save the predict result')
 parser.add_argument('--num_classes', type=int, default=6,
                     help='num of classes in model')
+parser.add_argument('--eval', default=None, type=str,
+                    help='image label for evaluation score')
 
 
 args = parser.parse_args()
@@ -38,16 +41,21 @@ def predict():
         transforms.Normalize([0.3396, 0.3628, 0.3362], [0.1315, 0.1287, 0.1333])
     ])
     image = Image.open(args.input_image).convert('RGB')
-    image = transform(image).unsqueeze(0).to(device)
-    # model = FastSCNN(args.num_classes).to(device)
+    image = image_transformer(image).unsqueeze(0).to(device)
+    model = FastSCNN(args.num_classes).to(device)
     print('Finished loading model!')
-    model = torch.load(args.checkpoint)
+    model.load_state_dict(torch.load(PATH))
+    # model = torch.load(args.checkpoint, map_location=device)
     model.eval()
     with torch.no_grad():
         outputs = model(image)
     pred = torch.argmax(outputs[0], 1).squeeze(0).cpu()
     outname = os.path.splitext(os.path.split(args.input_image)[-1])[0] + '.png'
     pred_2_img(pred, os.path.join(args.outdir, outname))
+    if not args.eval is None:
+        label = torch.load(args.eval)
+        pred = pred.unsqueeze(0)
+        print("image score: ", pixel_accuracy(pred, label))
 
 
 if __name__ == '__main__':

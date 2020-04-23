@@ -131,7 +131,7 @@ class Trainer:
             elif epoch_test_res.score > best_score:
                 best_score = epoch_test_res.score
                 if checkpoints is not None:
-                    torch.save(self.model, checkpoints)
+                    torch.save(self.model.state_dict(), checkpoints)
                     print("**** Checkpoint saved ****")
                 epochs_without_improvement = 0
             else:
