@@ -38,10 +38,10 @@ def predict():
         transforms.Normalize([0.3396, 0.3628, 0.3362], [0.1315, 0.1287, 0.1333])
     ])
     image = Image.open(args.input_image).convert('RGB')
-    image = transform(image).unsqueeze(0).to(device)
+    image = image_transformer(image).unsqueeze(0).to(device)
     # model = FastSCNN(args.num_classes).to(device)
     print('Finished loading model!')
-    model = torch.load(args.checkpoint)
+    model = torch.load(args.checkpoint, map_location=device)
     model.eval()
     with torch.no_grad():
         outputs = model(image)
