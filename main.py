@@ -7,6 +7,9 @@ import numbers
 import numpy as np
 import datetime
 
+from utils.transforms import ToClassLabels
+from utils.transforms import NewPad
+
 from train import Trainer
 from model import FastSCNN
 from dataset import PostdamDataset
@@ -26,76 +29,76 @@ ClassesColors = {
     (255, 0, 0): 5 # background
     }
 
-def get_class_color(color):
-    try:
-        return ClassesColors[color]
-    except KeyError:
-        r, g, b = color
-        if r > 200 and g > 200 and b > 200:
-            return 0
-        elif r < 50 and g < 50 and b > 200:
-            return 1
-        elif r < 50 and g > 200 and b > 200:
-            return 2
-        elif r < 50 and g > 200 and b < 50:
-            return 3
-        elif r > 200 and g > 200 and b < 50:
-            return 4
-        else:
-            return 5
-
-class ToClassLabels(object):
-    def __call__(self, segmented_image):
-        if torch.is_tensor(segmented_image):
-            return segmented_image
-        w, h = segmented_image.size
-        ret = torch.zeros((h, w), dtype=torch.long)
-        for i in range(w):
-            for j in range(h):
-                color = segmented_image.getpixel((i, j))
-                ret[j, i] = get_class_color(color)
-                # closest_color = min(list(ClassesColors.keys()), key=lambda x: np.linalg.norm(np.subtract(x, color)))
-                # ret[j,i] = ClassesColors[closest_color]
-                # ret[j, i] = ClassesColors[color]
-        return ret
-
-def get_padding(image):
-    image_w, image_h = image.size
-    width = 2048
-    height= 1024
-    w_padding = width - image_w
-    h_padding = height - image_h
-    l_pad = r_pad = w_padding // 2
-    r_pad = width - (image_w + r_pad + l_pad)
-    t_pad = b_pad = h_padding // 2
-    b_pad = height - (image_h + t_pad + b_pad)
-    padding = (int(l_pad), int(t_pad), int(r_pad), int(b_pad))
-    return padding
-
-class NewPad(object):
-    def __init__(self, fill=0, padding_mode='constant'):
-        assert isinstance(fill, (numbers.Number, str, tuple))
-        assert padding_mode in ['constant', 'edge', 'reflect', 'symmetric']
-
-        self.fill = fill
-        self.padding_mode = padding_mode
-
-    def __call__(self, img):
-        """
-        Args:
-            img (PIL Image): img to be padded.
-
-        Returns:
-            Padded image.
-        """
-        if torch.is_tensor(img):
-            assert img.shape == (1024, 2048)
-            return img
-        return F.pad(img, get_padding(img), self.fill, self.padding_mode)
-
-    def __repr__(self):
-        return self.__class__.__name__ + '(padding={0}, fill={1}, padding_mode={2})'. \
-            format(self.fill, self.padding_mode)
+# def get_class_color(color):
+#     try:
+#         return ClassesColors[color]
+#     except KeyError:
+#         r, g, b = color
+#         if r > 200 and g > 200 and b > 200:
+#             return 0
+#         elif r < 50 and g < 50 and b > 200:
+#             return 1
+#         elif r < 50 and g > 200 and b > 200:
+#             return 2
+#         elif r < 50 and g > 200 and b < 50:
+#             return 3
+#         elif r > 200 and g > 200 and b < 50:
+#             return 4
+#         else:
+#             return 5
+#
+# class ToClassLabels(object):
+#     def __call__(self, segmented_image):
+#         if torch.is_tensor(segmented_image):
+#             return segmented_image
+#         w, h = segmented_image.size
+#         ret = torch.zeros((h, w), dtype=torch.long)
+#         for i in range(w):
+#             for j in range(h):
+#                 color = segmented_image.getpixel((i, j))
+#                 ret[j, i] = get_class_color(color)
+#                 # closest_color = min(list(ClassesColors.keys()), key=lambda x: np.linalg.norm(np.subtract(x, color)))
+#                 # ret[j,i] = ClassesColors[closest_color]
+#                 # ret[j, i] = ClassesColors[color]
+#         return ret
+#
+# def get_padding(image):
+#     image_w, image_h = image.size
+#     width = 2048
+#     height= 1024
+#     w_padding = width - image_w
+#     h_padding = height - image_h
+#     l_pad = r_pad = w_padding // 2
+#     r_pad = width - (image_w + r_pad + l_pad)
+#     t_pad = b_pad = h_padding // 2
+#     b_pad = height - (image_h + t_pad + b_pad)
+#     padding = (int(l_pad), int(t_pad), int(r_pad), int(b_pad))
+#     return padding
+#
+# class NewPad(object):
+#     def __init__(self, fill=0, padding_mode='constant'):
+#         assert isinstance(fill, (numbers.Number, str, tuple))
+#         assert padding_mode in ['constant', 'edge', 'reflect', 'symmetric']
+#
+#         self.fill = fill
+#         self.padding_mode = padding_mode
+#
+#     def __call__(self, img):
+#         """
+#         Args:
+#             img (PIL Image): img to be padded.
+#
+#         Returns:
+#             Padded image.
+#         """
+#         if torch.is_tensor(img):
+#             assert img.shape == (1024, 2048)
+#             return img
+#         return F.pad(img, get_padding(img), self.fill, self.padding_mode)
+#
+#     def __repr__(self):
+#         return self.__class__.__name__ + '(padding={0}, fill={1}, padding_mode={2})'. \
+#             format(self.fill, self.padding_mode)
 
 
 def preprocessing(image, mask):
