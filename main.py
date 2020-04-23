@@ -12,7 +12,7 @@ from dataset import PostdamDataset
 from metrics import pixel_accuracy
 
 num_epochs = 2
-batch_size = 1
+batch_size = 2
 learning_rate = 0.001
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -95,6 +95,8 @@ def preprocessing(image, mask):
         transforms.ToTensor(),
         transforms.Normalize([0.3396, 0.3628, 0.3362], [0.1315, 0.1287, 0.1333])
     ])
+    return image_transformer(image).float(), mask_transformer(mask).float()
+
 
 train_image_path = './data/2_Ortho_RGB_train/'
 train_label_path = './data/labels_train/'
