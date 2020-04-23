@@ -1,0 +1,5 @@
+.ipynb_checkpoints
+.ipynb_checkpoints/*
+data/
+data/*
+.ipynb_checkpoints/fast_scnn-checkpoint.ipynb

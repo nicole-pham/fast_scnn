@@ -37,15 +37,14 @@ class PostdamDataset(Dataset):
         image_path = self.images[idx]
         image_name =  image_path.split('/')[-1]
         img = Image.open(image_path)
+        
         label_name = image_name.replace('RGB', 'label')
+        label_path = os.path.join(self.labels_path, label_name)
         if self.load_tensor:
-            label_name = label_name.replace('.tif', '.pt')
-            label = torch.load(label_name)
+            label_path = label_path.replace('.tif', '.pt')
+            label = torch.load(label_path)
         else:
-            label = Image.open(os.path.join(self.labels_path, label_name))
-
-        print(f"img in {image_path}")
-        print(f"label name {os.path.join(self.labels_path, label_name)}")
+            label = Image.open(label_path)
 
         if self.transform:
             img, label = self.transform(img, label)
