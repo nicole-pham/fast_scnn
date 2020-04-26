@@ -17,7 +17,7 @@ parser.add_argument('--checkpoint', type=str, default='checkpoints/FastSCNN',
                     help='which checkpoint to use')
 parser.add_argument('--input_image', type=str,
                     help='path to the input picture')
-parser.add_argument('--outdir', default='./test_result', type=str,
+parser.add_argument('--outdir', default='data/test_result', type=str,
                     help='path to save the predict result')
 parser.add_argument('--num_classes', type=int, default=6,
                     help='num of classes in model')
@@ -43,9 +43,9 @@ def predict():
     image = Image.open(args.input_image).convert('RGB')
     image = image_transformer(image).unsqueeze(0).to(device)
     model = FastSCNN(args.num_classes).to(device)
-    print('Finished loading model!')
-    model.load_state_dict(torch.load(PATH))
+    model.load_state_dict(torch.load(args.checkpoint, map_location=device))
     # model = torch.load(args.checkpoint, map_location=device)
+    print('Finished loading model!')
     model.eval()
     with torch.no_grad():
         outputs = model(image)

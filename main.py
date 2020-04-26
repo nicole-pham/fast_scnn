@@ -15,7 +15,7 @@ from model import FastSCNN
 from dataset import PostdamDataset
 from metrics import pixel_accuracy
 
-num_epochs = 100
+num_epochs = 150
 batch_size = 4
 learning_rate = 0.001
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
