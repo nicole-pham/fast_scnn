@@ -49,13 +49,14 @@ def predict():
     model.eval()
     with torch.no_grad():
         outputs = model(image)
-    pred = torch.argmax(outputs[0], 1).squeeze(0).cpu()
+    pred = torch.argmax(outputs[0], 1).squeeze(0).to(device)
     outname = os.path.splitext(os.path.split(args.input_image)[-1])[0] + '.png'
     pred_2_img(pred, os.path.join(args.outdir, outname))
     if not args.eval is None:
-        label = torch.load(args.eval)
-        pred = pred.unsqueeze(0)
-        print("image score: ", pixel_accuracy(pred, label))
+        # only one label for now, so add batch=1 dim
+        label = torch.load(args.eval).unsqueeze(0)
+        output = outputs[0]
+        print("image score: ", pixel_accuracy(output, label))
 
 
 if __name__ == '__main__':
