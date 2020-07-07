@@ -9,4 +9,6 @@ https://github.com/MarcWong/UDD
 model borrowed from: https://github.com/Tramac/Fast-SCNN-pytorch  
 
 ## potsdam example
-|Image | gt | result |
+|Image | gt | result | 
+|----| ---- |----|
+|![alt text](./demo/PaperImage.PNG "Model structure")  | ddd| ddd|
