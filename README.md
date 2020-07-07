@@ -9,6 +9,12 @@ https://github.com/MarcWong/UDD
 model borrowed from: https://github.com/Tramac/Fast-SCNN-pytorch  
 
 ## potsdam example
+
+<img src="./demo/op_potsdam_2_12_RGB_box0.tif" width="256"/>   <img src="./demo/op_potsdam_2_12_label_box0.tif" width="256"/>
+
+
+
+
 |Image | gt | result |
 |----| ---- |----|
 |![alt text](./demo/op_potsdam_2_12_RGB_box0.tif)  |asd | ad |
