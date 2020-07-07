@@ -1,5 +1,7 @@
 # fast_scnn
 
+Inline-style: 
+![alt text](https://github.com/Eladamar/fast_scnn/blob/master/demo/PaperImage.PNG "Model structure")  
 
 Fast SCNN implementation on Potsdam and UDD dataset  
 paper: https://arxiv.org/abs/1902.04502  
