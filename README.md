@@ -13,7 +13,6 @@ model borrowed from: https://github.com/Tramac/Fast-SCNN-pytorch
 |Image | gt | result |
 |------| -- |--------|
 | ![](./demo/op_potsdam_2_12_RGB_box0_original.png)  |![](./demo/op_potsdam_2_12_label_box0r.png) | ![](./demo/op_potsdam_2_12_RGB_box0r.png)  |
-| ![](./demo/airsim_image.png) |   ![](./demo/op_potsdam_2_12_label_box0r.png)    |![](./demo/airsim_out.png) |
 
 ## airsim  
 
