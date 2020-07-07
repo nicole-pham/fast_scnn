@@ -11,4 +11,4 @@ model borrowed from: https://github.com/Tramac/Fast-SCNN-pytorch
 ## potsdam example
 |Image | gt | result | 
 |----| ---- |----|
-|![alt text](./demo/op_potsdam_2_12_RGB_box0.tif)  | ![alt text](./demo/op_potsdam_2_12_label_box0.tif)| ![alt text](./demo/op_potsdam_2_12_RGB_box0.png =128x256)|
+|![alt text](./demo/op_potsdam_2_12_RGB_box0.tif)  | ![alt text](./demo/op_potsdam_2_12_label_box0.tif)| ![alt text](./demo/op_potsdam_2_12_RGB_box0.png){:height="50%" width="50%"}|
