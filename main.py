@@ -12,10 +12,10 @@ from utils.transforms import NewPad
 
 from train import Trainer
 from model import FastSCNN
-from dataset import PostdamDataset
+from utils.dataset import PostdamDataset, UDD
 from metrics import pixel_accuracy
 
-num_epochs = 150
+num_epochs = 100
 batch_size = 4
 learning_rate = 0.001
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -28,78 +28,6 @@ ClassesColors = {
     (255, 255, 0): 4, # car
     (255, 0, 0): 5 # background
     }
-
-# def get_class_color(color):
-#     try:
-#         return ClassesColors[color]
-#     except KeyError:
-#         r, g, b = color
-#         if r > 200 and g > 200 and b > 200:
-#             return 0
-#         elif r < 50 and g < 50 and b > 200:
-#             return 1
-#         elif r < 50 and g > 200 and b > 200:
-#             return 2
-#         elif r < 50 and g > 200 and b < 50:
-#             return 3
-#         elif r > 200 and g > 200 and b < 50:
-#             return 4
-#         else:
-#             return 5
-#
-# class ToClassLabels(object):
-#     def __call__(self, segmented_image):
-#         if torch.is_tensor(segmented_image):
-#             return segmented_image
-#         w, h = segmented_image.size
-#         ret = torch.zeros((h, w), dtype=torch.long)
-#         for i in range(w):
-#             for j in range(h):
-#                 color = segmented_image.getpixel((i, j))
-#                 ret[j, i] = get_class_color(color)
-#                 # closest_color = min(list(ClassesColors.keys()), key=lambda x: np.linalg.norm(np.subtract(x, color)))
-#                 # ret[j,i] = ClassesColors[closest_color]
-#                 # ret[j, i] = ClassesColors[color]
-#         return ret
-#
-# def get_padding(image):
-#     image_w, image_h = image.size
-#     width = 2048
-#     height= 1024
-#     w_padding = width - image_w
-#     h_padding = height - image_h
-#     l_pad = r_pad = w_padding // 2
-#     r_pad = width - (image_w + r_pad + l_pad)
-#     t_pad = b_pad = h_padding // 2
-#     b_pad = height - (image_h + t_pad + b_pad)
-#     padding = (int(l_pad), int(t_pad), int(r_pad), int(b_pad))
-#     return padding
-#
-# class NewPad(object):
-#     def __init__(self, fill=0, padding_mode='constant'):
-#         assert isinstance(fill, (numbers.Number, str, tuple))
-#         assert padding_mode in ['constant', 'edge', 'reflect', 'symmetric']
-#
-#         self.fill = fill
-#         self.padding_mode = padding_mode
-#
-#     def __call__(self, img):
-#         """
-#         Args:
-#             img (PIL Image): img to be padded.
-#
-#         Returns:
-#             Padded image.
-#         """
-#         if torch.is_tensor(img):
-#             assert img.shape == (1024, 2048)
-#             return img
-#         return F.pad(img, get_padding(img), self.fill, self.padding_mode)
-#
-#     def __repr__(self):
-#         return self.__class__.__name__ + '(padding={0}, fill={1}, padding_mode={2})'. \
-#             format(self.fill, self.padding_mode)
-
 
 def preprocessing(image, mask):
     mask_transformer = transforms.Compose([
@@ -114,18 +42,35 @@ def preprocessing(image, mask):
     ])
     return image_transformer(image).float(), mask_transformer(mask)
 
+def UDD_preprocessing(image, mask):
+    mask = np.array(mask).astype('int64')
+    mask = torch.torch.from_numpy(mask)
+    image_transformer = transforms.Compose([
+        NewPad(),
+        transforms.ToTensor(),
+        transforms.Normalize([0.3967, 0.4193, 0.4018], [0.1837, 0.1673, 0.1833])
+    ])
+    return image_transformer(image).float(), mask
 
-train_image_path = './data/2_Ortho_RGB_train/'
-train_label_path = './data/labels_train/'
-test_image_path = './data/2_Ortho_RGB_test/'
-test_label_path = './data/labels_test/'
 
-ds_train = PostdamDataset(train_image_path, train_label_path, transform=preprocessing, load_tensor=True)
-ds_test = PostdamDataset(test_image_path, test_label_path, transform=preprocessing, load_tensor=True)
+# train_image_path = './data/2_Ortho_RGB_train/'
+# train_label_path = './data/labels_train/'
+# test_image_path = './data/2_Ortho_RGB_test/'
+# test_label_path = './data/labels_test/'
+# ds_train = PostdamDataset(train_image_path, train_label_path, transform=preprocessing, load_tensor=True)
+# ds_test = PostdamDataset(test_image_path, test_label_path, transform=preprocessing, load_tensor=True)
+
+train_image_path = '/home/eladamar/fast_scnn/data/UDD5/train/splitted/src/'
+train_label_path = '/home/eladamar/fast_scnn/data/UDD5/train/splitted/gt/'
+test_image_path = '/home/eladamar/fast_scnn/data/UDD5/val/splitted/src/'
+test_label_path = '/home/eladamar/fast_scnn/data/UDD5/val/splitted/gt/'
+ds_train = UDD(train_image_path, train_label_path, transform=UDD_preprocessing)
+ds_test = UDD(test_image_path, test_label_path, transform=UDD_preprocessing)
+
 dl_train = DataLoader(ds_train, batch_size, shuffle=True)
 dl_test = DataLoader(ds_test, batch_size, shuffle=False)
 
-model = FastSCNN(num_classes=6)
+model = FastSCNN(num_classes=5)
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 criterion = CrossEntropyLoss()
 success_metric = pixel_accuracy
@@ -133,6 +78,6 @@ trainer = Trainer(model, criterion, optimizer, success_metric, device, None)
 fit_res = trainer.fit(dl_train,
                       dl_test,
                       num_epochs= num_epochs,
-                      checkpoints='checkpoints/' + model.__class__.__name__)
+                      checkpoints='checkpoints/' + model.__class__.__name__ + datetime.datetime.today().strftime("%m_%d"))
 
 print(fit_res)
