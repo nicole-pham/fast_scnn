@@ -1,4 +1,5 @@
 # fast_scnn
+**This model used as part of [The Oracle](https://youtu.be/BMZZG9P4NsU?t=4426) project**
 
 ![alt text](./demo/PaperImage.PNG "Model structure")  
 
@@ -9,8 +10,6 @@ dataset: http://www2.isprs.org/commissions/comm3/wg4/2d-sem-label-potsdam.html
 https://github.com/MarcWong/UDD  
 model borrowed from: https://github.com/Tramac/Fast-SCNN-pytorch  
   
-**This model used as part of [The Oracle](https://youtu.be/BMZZG9P4NsU?t=4426) project**
-
 ## Potsdam example
 
 |Image | gt | result |
