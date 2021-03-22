@@ -52,18 +52,10 @@ def UDD_preprocessing(image, mask):
     ])
     return image_transformer(image).float(), mask
 
-
-# train_image_path = './data/2_Ortho_RGB_train/'
-# train_label_path = './data/labels_train/'
-# test_image_path = './data/2_Ortho_RGB_test/'
-# test_label_path = './data/labels_test/'
-# ds_train = PostdamDataset(train_image_path, train_label_path, transform=preprocessing, load_tensor=True)
-# ds_test = PostdamDataset(test_image_path, test_label_path, transform=preprocessing, load_tensor=True)
-
-train_image_path = '/home/eladamar/fast_scnn/data/UDD5/train/splitted/src/'
-train_label_path = '/home/eladamar/fast_scnn/data/UDD5/train/splitted/gt/'
-test_image_path = '/home/eladamar/fast_scnn/data/UDD5/val/splitted/src/'
-test_label_path = '/home/eladamar/fast_scnn/data/UDD5/val/splitted/gt/'
+train_image_path = './data/UDD5/train/splitted/src/'
+train_label_path = './fast_scnn/data/UDD5/train/splitted/gt/'
+test_image_path = './fast_scnn/data/UDD5/val/splitted/src/'
+test_label_path = './fast_scnn/data/UDD5/val/splitted/gt/'
 ds_train = UDD(train_image_path, train_label_path, transform=UDD_preprocessing)
 ds_test = UDD(test_image_path, test_label_path, transform=UDD_preprocessing)
 
