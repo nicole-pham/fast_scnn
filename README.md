@@ -1,5 +1,5 @@
 # fast_scnn
-**This model used as part of [The Oracle](https://youtu.be/BMZZG9P4NsU?t=4426) project**
+**This model used as part of [The Oracle](https://arxiv.org/pdf/2204.12592.pdf) project**.[1](https://youtu.be/BMZZG9P4NsU?t=4426)
 
 ![alt text](./demo/PaperImage.PNG "Model structure")  
 
