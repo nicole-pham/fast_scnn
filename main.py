@@ -12,13 +12,16 @@ from utils.transforms import NewPad
 
 from train import Trainer
 from model import FastSCNN
-from utils.dataset import PostdamDataset, UDD
+from utils.dataset import PotsdamDataset
 from metrics import pixel_accuracy
 
+# python -m pip install setuptools tdqm matplotlib numpy torch torchvision
+
 num_epochs = 100
-batch_size = 4
-learning_rate = 0.001
+batch_size = 1
+learning_rate = 1e-3
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+torch.cuda.empty_cache()
 
 ClassesColors = {
     (255, 255, 255): 0, # impervious_surfaces
@@ -52,12 +55,20 @@ def UDD_preprocessing(image, mask):
     ])
     return image_transformer(image).float(), mask
 
+'''
 train_image_path = './data/UDD5/train/splitted/src/'
 train_label_path = './fast_scnn/data/UDD5/train/splitted/gt/'
 test_image_path = './fast_scnn/data/UDD5/val/splitted/src/'
 test_label_path = './fast_scnn/data/UDD5/val/splitted/gt/'
-ds_train = UDD(train_image_path, train_label_path, transform=UDD_preprocessing)
-ds_test = UDD(test_image_path, test_label_path, transform=UDD_preprocessing)
+'''
+
+train_image_path = './data/Potsdam/2_Ortho_RGB/'
+train_label_path = './data/Potsdam/Labels/'
+test_image_path = './data/Potsdam/2_Ortho_RGB/'
+test_label_path = './data/Potsdam/Labels/'
+
+ds_train = PotsdamDataset(train_image_path, train_label_path, transform=None)
+ds_test = PotsdamDataset(test_image_path, test_label_path, transform=None)
 
 dl_train = DataLoader(ds_train, batch_size, shuffle=True)
 dl_test = DataLoader(ds_test, batch_size, shuffle=False)

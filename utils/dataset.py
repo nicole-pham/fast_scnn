@@ -20,7 +20,7 @@ class ClassesColors:
         return 3
 
 
-class PostdamDataset(Dataset):
+class PotsdamDataset(Dataset):
     def __init__(self, images_path, label_path, transform=None, load_tensor=False):
         self.images = glob.glob(os.path.join(images_path, '*.tif'))
         self.labels_path = label_path
