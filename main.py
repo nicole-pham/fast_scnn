@@ -15,7 +15,7 @@ from model import FastSCNN
 from utils.dataset import PotsdamDataset
 from metrics import pixel_accuracy
 
-# python -m pip install setuptools tdqm matplotlib numpy torch torchvision
+# python -m pip install setuptools tdqm matplotlib numpy torch torchvision rasterio opencv-python
 
 num_epochs = 100
 batch_size = 1
@@ -62,15 +62,15 @@ test_image_path = './fast_scnn/data/UDD5/val/splitted/src/'
 test_label_path = './fast_scnn/data/UDD5/val/splitted/gt/'
 '''
 
-train_image_path = './data/Potsdam/2_Ortho_RGB/'
-train_label_path = './data/Potsdam/Labels/'
-test_image_path = './data/Potsdam/2_Ortho_RGB/'
-test_label_path = './data/Potsdam/Labels/'
+train_image_path = './data/Potsdam_6k/training/imgs'
+train_label_path = './data/Potsdam_6k/training/masks'
+test_image_path = './data/Potsdam_6k/validation/imgs'
+test_label_path = './data/Potsdam_6k/validation/masks'
 
 ds_train = PotsdamDataset(train_image_path, train_label_path, transform=None)
 ds_test = PotsdamDataset(test_image_path, test_label_path, transform=None)
 
-dl_train = DataLoader(ds_train, batch_size, shuffle=True)
+dl_train = DataLoader(ds_train, batch_size, shuffle=False)
 dl_test = DataLoader(ds_test, batch_size, shuffle=False)
 
 model = FastSCNN(num_classes=5)

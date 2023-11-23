@@ -7,6 +7,7 @@ import glob
 import sys
 from torchvision.transforms import ToPILImage
 import torch.nn.functional as F
+import numpy as np
 
 class ClassesColors:
     impervious_surfaces = (255, 255, 255)
@@ -22,7 +23,7 @@ class ClassesColors:
 
 class PotsdamDataset(Dataset):
     def __init__(self, images_path, label_path, transform=None, load_tensor=False):
-        self.images = glob.glob(os.path.join(images_path, '*.tif'))
+        self.images = glob.glob(os.path.join(images_path, '*.npy'))
         self.labels_path = label_path
         self.transform = transform
         self.load_tensor = load_tensor
@@ -36,15 +37,24 @@ class PotsdamDataset(Dataset):
 
         image_path = self.images[idx]
         image_name =  image_path.split('/')[-1]
-        img = Image.open(image_path)
+
+
+        img = np.load(image_path)
+        img = img.transpose(1,2,0)
+        img = Image.fromarray(img, "RGB")
         
         label_name = image_name.replace('RGB', 'label')
-        label_path = os.path.join(self.labels_path, label_name)
+        #label_path = os.path.join(self.labels_path, label_name)
+        label_path = image_path.replace('.npy', '-mask.npy')
+        label_path = label_path.replace('imgs', 'masks')
+        
         if self.load_tensor:
-            label_path = label_path.replace('.tif', '.pt')
+            label_path = image_path.replace('.npy', '-mask.npy')
             label = torch.load(label_path)
         else:
-            label = Image.open(label_path)
+            label = np.load(label_path)
+            label = label.transpose(1,2,0)
+            label = Image.fromarray(label, "L")
 
         if self.transform:
             img, label = self.transform(img, label)
