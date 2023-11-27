@@ -13,10 +13,6 @@ from abc import abstractmethod
 from typing import Tuple
 import random
 
-
-
-
-
 # Potsdam
 ClassesColors = {
     (255, 255, 255): 0, # impervious_surfaces
@@ -28,17 +24,6 @@ ClassesColors = {
     }
 
 potsdam_map = {v: k for k,v in ClassesColors.items()}
-
-UDD_colors = {
-    (0, 255, 0): 0,  # vegetation
-    (255, 0, 0): 1,  # building
-    (0, 0, 255): 2,  # road
-    (128, 128, 0): 3,  # car
-    (128, 128, 128): 4,  # other
-}
-
-UDD_map = {v: k for k,v in UDD_colors.items()}
-
 
 def get_class_color(color):
     try:
@@ -55,8 +40,10 @@ def get_class_color(color):
             return 3
         elif r > 200 and g > 200 and b < 50:
             return 4
-        else:
+        elif r > 200 and g < 50 and b < 50:
             return 5
+        else:
+            return 6
 
 class ToClassLabels(object):
     def __call__(self, segmented_image):
@@ -339,10 +326,10 @@ def pred_2_img(pred, output_loc='data/output/out.png', show=False):
     r = label_mask.copy()
     g = label_mask.copy()
     b = label_mask.copy()
-    for ll in range(5):
-        r[label_mask == ll] = UDD_map[ll][0]
-        g[label_mask == ll] = UDD_map[ll][1]
-        b[label_mask == ll] = UDD_map[ll][2]
+    for ll in range(6):
+        r[label_mask == ll] = potsdam_map[ll][0]
+        g[label_mask == ll] = potsdam_map[ll][1]
+        b[label_mask == ll] = potsdam_map[ll][2]
     rgb = np.zeros((label_mask.shape[0], label_mask.shape[1], 3))
     rgb[:, :, 0] = r / 255.0
     rgb[:, :, 1] = g / 255.0

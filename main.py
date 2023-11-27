@@ -17,8 +17,8 @@ from metrics import pixel_accuracy
 
 # python -m pip install setuptools tdqm matplotlib numpy torch torchvision rasterio opencv-python
 
-num_epochs = 100
-batch_size = 2
+num_epochs = 10
+batch_size = 64
 learning_rate = 1e-3
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 torch.cuda.empty_cache()
@@ -29,19 +29,32 @@ ClassesColors = {
     (0, 255, 255): 2, # low_vegetation
     (0, 255, 0): 3, # tree
     (255, 255, 0): 4, # car
-    (255, 0, 0): 5 # background
+    (255, 0, 0): 5, # background
+    (0, 0, 0): 6, # idk
+    (0, 0, 0): 7, # idk
+    (0, 0, 0): 8, # idk
+    (0, 0, 0): 9, # idk
+    (0, 0, 0): 10, # idk
+    (0, 0, 0): 11, # idk
+    (0, 0, 0): 12, # idk
+    (0, 0, 0): 13, # idk
+    (0, 0, 0): 14, # idk
+    (0, 0, 0): 15, # idk
+    (0, 0, 0): 16, # idk
+    (0, 0, 0): 17, # idk
+    (0, 0, 0): 18 # idk
     }
 
 def preprocessing(image, mask):
     mask_transformer = transforms.Compose([
         NewPad(fill=(255,0,0)),
-        ToClassLabels()
-#         transforms.Lambda(lambda x: to_class_labels(x))
+        ToClassLabels(),
+        #transforms.Lambda(lambda x: to_class_labels(x))
     ])
     image_transformer = transforms.Compose([
         NewPad(),
         transforms.ToTensor(),
-        transforms.Normalize([0.3396, 0.3628, 0.3362], [0.1315, 0.1287, 0.1333])
+        transforms.Normalize([0.3387, 0.3621, 0.3354], [0.1034, 0.1037, 0.1073])
     ])
     return image_transformer(image).float(), mask_transformer(mask)
 

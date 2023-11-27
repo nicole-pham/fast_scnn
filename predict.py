@@ -10,6 +10,9 @@ from utils.transforms import NewPad
 from utils.transforms import pred_2_img
 from metrics import pixel_accuracy
 
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 parser = argparse.ArgumentParser(
     description='Predict segmentation result from a given image')
@@ -29,18 +32,26 @@ args = parser.parse_args()
 
 
 def predict():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = "cpu"
     # output folder
     if not os.path.exists(args.outdir):
         os.makedirs(args.outdir)
 
     # image transform
     image_transformer = transforms.Compose([
-        NewPad(),
         transforms.ToTensor(),
         transforms.Normalize([0.3396, 0.3628, 0.3362], [0.1315, 0.1287, 0.1333])
     ])
-    image = Image.open(args.input_image).convert('RGB')
+    img = np.load(args.input_image)
+    img = img.transpose(1,2,0)
+    
+    fig = plt.figure()
+    canvas = FigureCanvas(fig)
+    plt.imshow(img)
+    canvas.print_figure('og.png')
+    
+    image = Image.fromarray(img).convert('RGB')
     image = image_transformer(image).unsqueeze(0).to(device)
     model = FastSCNN(args.num_classes).to(device)
     model.load_state_dict(torch.load(args.checkpoint, map_location=device))
