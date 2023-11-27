@@ -1,7 +1,8 @@
 import torch
 
 def pixel_accuracy(preds, label):
-    acc_sum = torch.sum(preds.argmax(axis=1) == label).item()
+    pred_argmax = preds.argmax(axis=1)
+    acc_sum = torch.sum(preds == label).item()
     # divide by batch size
     acc_mean = acc_sum / preds.shape[0]
     image_size = preds.shape[2] * preds.shape[3]

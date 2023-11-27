@@ -18,7 +18,7 @@ from metrics import pixel_accuracy
 # python -m pip install setuptools tdqm matplotlib numpy torch torchvision rasterio opencv-python
 
 num_epochs = 100
-batch_size = 1
+batch_size = 2
 learning_rate = 1e-3
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 torch.cuda.empty_cache()
@@ -45,16 +45,6 @@ def preprocessing(image, mask):
     ])
     return image_transformer(image).float(), mask_transformer(mask)
 
-def UDD_preprocessing(image, mask):
-    mask = np.array(mask).astype('int64')
-    mask = torch.torch.from_numpy(mask)
-    image_transformer = transforms.Compose([
-        NewPad(),
-        transforms.ToTensor(),
-        transforms.Normalize([0.3967, 0.4193, 0.4018], [0.1837, 0.1673, 0.1833])
-    ])
-    return image_transformer(image).float(), mask
-
 '''
 train_image_path = './data/UDD5/train/splitted/src/'
 train_label_path = './fast_scnn/data/UDD5/train/splitted/gt/'
@@ -73,7 +63,7 @@ ds_test = PotsdamDataset(test_image_path, test_label_path, transform=None)
 dl_train = DataLoader(ds_train, batch_size, shuffle=False)
 dl_test = DataLoader(ds_test, batch_size, shuffle=False)
 
-model = FastSCNN(num_classes=5)
+model = FastSCNN(num_classes=18)
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 criterion = CrossEntropyLoss()
 success_metric = pixel_accuracy

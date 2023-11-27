@@ -54,7 +54,7 @@ class PotsdamDataset(Dataset):
         else:
             label = np.load(label_path)
             label = label.transpose(1,2,0)
-            label = Image.fromarray(label, "L")
+            # label = Image.fromarray(label, "RGB")
 
         if self.transform:
             img, label = self.transform(img, label)
@@ -65,91 +65,8 @@ class PotsdamDataset(Dataset):
 
         return img, label
 
-
-class UDD(Dataset):
-    def __init__(self, images_path, label_path, transform=None):
-        self.images = glob.glob(os.path.join(images_path, '*.png'))
-        self.labels_path = label_path
-        self.transform = transform
-
-    def __len__(self):
-        return len(self.images)
-
-    def __getitem__(self, idx):
-        if idx < 0 or idx > len(self.images):
-            raise IndexError("Index out of bound")
-
-        image_path = self.images[idx]
-        image_name = image_path.split('/')[-1]
-        img = Image.open(image_path)
-
-        label_path = os.path.join(self.labels_path, image_name)
-        label = Image.open(label_path)
-        if self.transform:
-            img, label = self.transform(img, label)
-        else:
-            to_tensor = transforms.ToTensor()
-            img, label = to_tensor(img), to_tensor(label)
-
-        return img, label
-
-
-class AirSimDataset(Dataset):
-    """A class for using the aeroscapes data set."""
-    def __init__(self, root: str, partition: str = 'train', transforms=None):
-        """
-        Initialize the data set.
-        Args:
-            root: the root directory of the data set
-            transforms: a transformation that takes input PIL images and returns
-        """
-        super().__init__()
-        if partition not in ['train', 'test']:
-            raise ValueError("partition should be either 'train' or 'test', got ", partition)
-        if not os.path.isdir(root):
-            raise NotADirectoryError(f'{root} is not a directory.')
-        self.transforms = transforms
-        # retrieve the set of id's for the current partition
-        # collect all the file names
-        images_dir = os.path.join(root, 'images')
-        masks_dir = os.path.join(root, 'masks')
-        if not os.path.isdir(images_dir) or not os.path.isdir(masks_dir):
-            raise NotADirectoryError(f'{root} is does not contain \'images\' and \'masks\' subdirectories.')
-
-        self.n_samples = len(os.listdir(images_dir))
-        if self.n_samples <= 0:
-            raise FileNotFoundError('sub directories should not be empty.')
-        train_size = int(0.8 * self.n_samples)
-        if partition == 'train':
-            self.n_samples = train_size
-            self.images = [os.path.join(images_dir, f'{i}.png') for i in range(train_size)]
-            self.masks = [os.path.join(masks_dir, f'{i}.png') for i in range(train_size)]
-        else:
-            self.images = [os.path.join(images_dir, f'{i}.png') for i in range(train_size, self.n_samples)]
-            self.masks = [os.path.join(masks_dir, f'{i}.png') for i in range(train_size, self.n_samples)]
-            self.n_samples = self.n_samples - train_size
-
-        assert len(self.images) == len(self.masks), 'Error: images and masks should be of the same size.'
-
-    def __getitem__(self, index):
-        if index >= self.n_samples:
-            raise IndexError(f'{index} is out of range, only {self.n_samples} samples.')
-        img = Image.open(self.images[index])
-        mask = Image.open(self.masks[index])
-
-        if self.transforms is not None:
-            img, mask = self.transforms(img, mask)
-        else:
-            to_tensor = transforms.ToTensor()
-            img, mask = to_tensor(img), to_tensor(mask)
-
-        return img, mask
-
-    def __len__(self):
-        return self.n_samples
-
 def compute_mean_std(images_path, label_path):
-    dataset = UDD(images_path, label_path)
+    dataset = PotsdamDataset(images_path, label_path)
     loader = DataLoader(
         dataset,
         batch_size=1,
@@ -174,4 +91,7 @@ def compute_mean_std(images_path, label_path):
     print(std)
 
 if __name__ == "__main__":
-    compute_mean_std(sys.argv[1], sys.argv[2])
+    train_image_path = './data/Potsdam_6k/training/imgs'
+    train_label_path = './data/Potsdam_6k/training/masks'
+    # compute_mean_std(sys.argv[1], sys.argv[2])
+    compute_mean_std(train_image_path, train_label_path)

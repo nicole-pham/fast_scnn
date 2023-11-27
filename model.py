@@ -234,7 +234,8 @@ class Classifer(nn.Module):
 
 
 if __name__ == '__main__':
-    img = torch.randn(2, 3, 2048, 1024)
-    model = FastSCNN(10)
+    #img = torch.randn(2, 3, 2048, 1024)
+    img = torch.randn(2, 3, 256, 256)
+    model = FastSCNN(18)
     outputs = model(img)
     print(outputs[0].shape)
