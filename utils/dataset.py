@@ -40,8 +40,8 @@ class PotsdamDataset(Dataset):
 
 
         img = np.load(image_path)
-        img = img.transpose(1,2,0)
-        img = Image.fromarray(img, "RGB")
+        img = img.transpose(1,2,0) # data structure should be (img_dim[0], img_dim[1], num_classes)
+        #img = Image.fromarray(img, "RGB")
         
         label_name = image_name.replace('RGB', 'label')
         #label_path = os.path.join(self.labels_path, label_name)
@@ -53,8 +53,7 @@ class PotsdamDataset(Dataset):
             label = torch.load(label_path)
         else:
             label = np.load(label_path)
-            label = label.transpose(1,2,0)
-            # label = Image.fromarray(label, "RGB")
+            label = label.transpose(1,2,0) # data structure should be (img_dim[0], img_dim[1], num_classes)
 
         if self.transform:
             img, label = self.transform(img, label)

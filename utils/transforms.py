@@ -25,41 +25,6 @@ ClassesColors = {
 
 potsdam_map = {v: k for k,v in ClassesColors.items()}
 
-def get_class_color(color):
-    try:
-        return ClassesColors[color]
-    except KeyError:
-        r, g, b = color
-        if r > 200 and g > 200 and b > 200:
-            return 0
-        elif r < 50 and g < 50 and b > 200:
-            return 1
-        elif r < 50 and g > 200 and b > 200:
-            return 2
-        elif r < 50 and g > 200 and b < 50:
-            return 3
-        elif r > 200 and g > 200 and b < 50:
-            return 4
-        elif r > 200 and g < 50 and b < 50:
-            return 5
-        else:
-            return 6
-
-class ToClassLabels(object):
-    def __call__(self, segmented_image):
-        if torch.is_tensor(segmented_image):
-            return segmented_image
-        w, h = segmented_image.size
-        ret = torch.zeros((h, w), dtype=torch.long)
-        for i in range(w):
-            for j in range(h):
-                color = segmented_image.getpixel((i, j))
-                ret[j, i] = get_class_color(color)
-                # closest_color = min(list(ClassesColors.keys()), key=lambda x: np.linalg.norm(np.subtract(x, color)))
-                # ret[j,i] = ClassesColors[closest_color]
-                # ret[j, i] = ClassesColors[color]
-        return ret
-
 def get_padding(image):
     image_w, image_h = image.size
     width = 2048

@@ -228,10 +228,12 @@ def img_n_tens_slice(_img_ID):
             tmask_1hot  = _masks[:,row*stride:row*stride+Filter, col*stride:col*stride+Filter]
 
             # TODO: create boundary/distance on the fly?
-            tbound = get_boundary(tmask_1hot)
+            #tbound = get_boundary(tmask_1hot)
             tdist = get_distance(tmask_1hot)
             # Aggregate all masks together in a single entity
-            tmask_all = np.concatenate([tmask_1hot,tbound,tdist],axis=0)
+
+            # only use the 1 hot encoded masks, we only use them anyway
+            tmask_all = tmask_1hot
 
             run_ID = str(uuid.uuid4())
             if row >= nTimesRows_val and col >= nTimesCols_val :
