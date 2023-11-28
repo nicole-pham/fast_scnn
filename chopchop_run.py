@@ -229,7 +229,7 @@ def img_n_tens_slice(_img_ID):
 
             # TODO: create boundary/distance on the fly?
             #tbound = get_boundary(tmask_1hot)
-            tdist = get_distance(tmask_1hot)
+            #tdist = get_distance(tmask_1hot)
             # Aggregate all masks together in a single entity
 
             # only use the 1 hot encoded masks, we only use them anyway
@@ -254,10 +254,11 @@ def img_n_tens_slice(_img_ID):
         timg        = _img  [:, row*stride:row*stride+Filter, rev_col:]
         tmask_1hot  = _masks[:, row*stride:row*stride+Filter, rev_col:]
 
-        tbound = get_boundary(tmask_1hot)
-        tdist = get_distance(tmask_1hot)
+        #tbound = get_boundary(tmask_1hot)
+        #tdist = get_distance(tmask_1hot)
         # Aggregate all masks together in a single entity
-        tmask_all = np.concatenate([tmask_1hot,tbound,tdist],axis=0)
+        
+        tmask_all = tmask_1hot  # only use the 1 hot encoded masks, we only use them anyway
         run_ID = str(uuid.uuid4())
         timg_name  = write_dir_img_val + 'img-' + run_ID +'.npy'
         tmask_name = write_dir_label_val + 'img-'+ run_ID +'-mask.npy'
@@ -270,10 +271,11 @@ def img_n_tens_slice(_img_ID):
         timg        = _img  [:, rev_row:, col*stride:col*stride + Filter]
         tmask_1hot  = _masks[:, rev_row:, col*stride:col*stride + Filter]
 
-        tbound = get_boundary(tmask_1hot)
-        tdist = get_distance(tmask_1hot)
+        #tbound = get_boundary(tmask_1hot)
+        #tdist = get_distance(tmask_1hot)
         # Aggregate all masks together in a single entity
-        tmask_all = np.concatenate([tmask_1hot,tbound,tdist],axis=0)
+        tmask_all = tmask_1hot
+        
         run_ID = str(uuid.uuid4())
         timg_name  = write_dir_img_val + 'img-' + run_ID +'.npy'
         tmask_name = write_dir_label_val + 'img-'+ run_ID +'-mask.npy'

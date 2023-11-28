@@ -32,7 +32,7 @@ ClassesColors = {
 
 def preprocessing(image, mask):
     mask_transformer = transforms.Compose([
-        transforms.Lambda(lambda x: x)
+        transforms.Lambda(lambda x: x) # don't do anything to the mask
     ])
     image_transformer = transforms.Compose([
         transforms.ToTensor(),
