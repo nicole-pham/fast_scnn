@@ -12,11 +12,12 @@ from metrics import pixel_accuracy
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 parser = argparse.ArgumentParser(
     description='Predict segmentation result from a given image')
-parser.add_argument('--checkpoint', type=str, default='checkpoints/FastSCNN',
+parser.add_argument('--checkpoint', type=str, default='checkpoints/FastSCNN11_29',
                     help='which checkpoint to use')
 parser.add_argument('--input_image', type=str,
                     help='path to the input picture')
@@ -43,13 +44,14 @@ def predict():
         transforms.ToTensor(),
         transforms.Normalize([0.3396, 0.3628, 0.3362], [0.1315, 0.1287, 0.1333])
     ])
-    img = np.load(args.input_image)
+    #img = np.load(args.input_image)
+    img = np.load('img-0a00f663-3528-4ac2-86f3-36ffbdf5e69b.npy')
     img = img.transpose(1,2,0)
     
-    fig = plt.figure()
+    fig = plt.figure(1)
     canvas = FigureCanvas(fig)
     plt.imshow(img)
-    canvas.print_figure('og.png')
+    canvas.print_figure('test-pic.png')
     
     image = Image.fromarray(img).convert('RGB')
     image = image_transformer(image).unsqueeze(0).to(device)
@@ -61,8 +63,31 @@ def predict():
     with torch.no_grad():
         outputs = model(image)
     pred = torch.argmax(outputs[0], 1).squeeze(0).to(device)
-    outname = os.path.splitext(os.path.split(args.input_image)[-1])[0] + '.png'
-    pred_2_img(pred, os.path.join(args.outdir, outname))
+    #outname = os.path.splitext(os.path.split(args.input_image)[-1])[0] + '.png'
+    outname = 'test-pred.png'
+    #pred_2_img(pred, os.path.join(args.outdir, outname))
+    pred_2_img(pred, os.path.join(outname))
+    
+    mask = np.load('img-0a00f663-3528-4ac2-86f3-36ffbdf5e69b-mask.npy')
+    mask = np.argmax(mask, 0)
+    
+    ClassesColors = {
+        (255,0,0):0,
+        (255,255,255):1,
+        (255,255,0):2,
+        (0,0,255):3,
+        (0,255,255):4,
+        (0,255,0):5
+    }
+    
+    Class1H2RGB =  dict([[str(val),key] for key,val in ClassesColors.items()])
+    cmap = ListedColormap(np.array([Class1H2RGB[k] for k in sorted(Class1H2RGB.keys())])/255.0)
+    plt.figure(2)
+    plt.imshow(mask,cmap=cmap,rasterized=True)
+    plt.figure(3)
+    plt.imshow(pred, cmap=cmap, rasterized=True)
+    plt.show(block=True)
+
     if not args.eval is None:
         # only one label for now, so add batch=1 dim
         label = torch.load(args.eval).unsqueeze(0)
