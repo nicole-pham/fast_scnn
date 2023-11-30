@@ -53,14 +53,14 @@ class PotsdamDataset(Dataset):
             label = torch.load(label_path)
         else:
             label = np.load(label_path)
-            label = label.transpose(1,2,0) # data structure should be (img_dim[0], img_dim[1], num_classes)
+            #label = label.transpose(1,2,0) # data structure should be (img_dim[0], img_dim[1], num_classes)
 
         if self.transform:
             img, label = self.transform(img, label)
         else:
             to_tensor = transforms.ToTensor()
             img = to_tensor(img)
-            label = to_tensor(label)
+            label = torch.tensor(label, dtype=torch.float32)
 
         return img, label
 

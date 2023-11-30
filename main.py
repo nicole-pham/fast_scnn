@@ -40,10 +40,10 @@ def preprocessing(image, mask):
     ])
     return image_transformer(image).float(), mask_transformer(mask)
 
-train_image_path = './data/Potsdam_6k/training/imgs'
-train_label_path = './data/Potsdam_6k/training/masks'
-test_image_path = './data/Potsdam_6k/validation/imgs'
-test_label_path = './data/Potsdam_6k/validation/masks'
+train_image_path = '../data/Potsdam_6k/training/imgs'
+train_label_path = '../data/Potsdam_6k/training/masks'
+test_image_path = '../data/Potsdam_6k/validation/imgs'
+test_label_path = '../data/Potsdam_6k/validation/masks'
 
 ds_train = PotsdamDataset(train_image_path, train_label_path, transform=None)
 ds_test = PotsdamDataset(test_image_path, test_label_path, transform=None)
